@@ -1,9 +1,8 @@
 const cypress = require('eslint-plugin-cypress');
 const prettier = require('eslint-config-prettier');
 
-
 module.exports = [
-  // Global ignores (reemplaza .eslintignore)
+  // Replaces .eslintignore (ESLint v9+)
   {
     ignores: [
       'node_modules/**',
@@ -11,22 +10,23 @@ module.exports = [
       'cypress/screenshots/**',
       'dist/**',
       'coverage/**',
+      '*.log',
     ],
   },
 
-  // Base rules for JS files
+  // Base JS rules
   {
-    files: ['**/*.js', '**/*.cjs', '**/*.mjs'],
+    files: ['**/*.js', '**/*.cjs'],
     languageOptions: {
       ecmaVersion: 2022,
-      sourceType: 'module',
+      sourceType: 'commonjs',
     },
     rules: {
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
     },
   },
 
-  // Cypress rules only for Cypress-related files
+  // Cypress-specific rules
   {
     files: ['cypress/**/*.js', 'cypress/**/*.cy.js', 'cypress.config.*'],
     plugins: {
@@ -36,5 +36,7 @@ module.exports = [
       ...cypress.configs.recommended.rules,
     },
   },
+
+  // Disable formatting-related ESLint rules that conflict with Prettier
   prettier,
 ];

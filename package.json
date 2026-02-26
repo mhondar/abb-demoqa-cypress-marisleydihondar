@@ -30,6 +30,7 @@
   "homepage": "https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar#readme",
   "devDependencies": {
     "cypress": "^15.11.0",
+    "dotenv": "^17.3.1",
     "eslint": "^10.0.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-cypress": "^6.1.0",

@@ -1,4 +1,16 @@
 const booksPage = require('../../pages/books.page');
+const { loadFixture } = require('../../utils/data.utils');
+
+describe('Books - Search', () => {
+  it('filters results using centralized test data', () => {
+    booksPage.visit();
+
+    loadFixture('books/search.json').then((data) => {
+      booksPage.search(data.validSearchTerm);
+      booksPage.expectAllTitlesContain(data.validSearchTerm);
+    });
+  });
+});
 
 describe('Books - Search functionality', () => {
   beforeEach(() => {

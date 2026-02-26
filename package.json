@@ -1,0 +1,36 @@
+{
+  "name": "abb-demoqa-cypress-marisleydihondar",
+  "version": "1.0.0",
+  "description": "Cypress automation framework for ABB QA Assignment",
+  "author": "Marisleydi Hondar Martinez",
+  "private": true,
+  "main": "index.js",
+  "scripts": {
+    "cy:open": "cypress open",
+    "cy:run": "cypress run",
+    "test": "cypress run"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar.git"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/issues"
+  },
+  "homepage": "https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar#readme",
+  "devDependencies": {
+    "cypress": "^15.11.0",
+    "eslint": "^10.0.2",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-cypress": "^6.1.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.2.7",
+    "prettier": "^3.8.1"
+  }
+}

@@ -344,3 +344,17 @@ This document defines functional test cases for:
 - Username still visible
 
 ---
+
+# 7. Requirements Traceability Matrix
+
+| Requirement | Description                               | Covered By                   |
+| ----------- | ----------------------------------------- | ---------------------------- |
+| R1          | GET /BookStore/v1/Books returns all books | TC-API-01, TC-API-02         |
+| R2          | API returns valid book structure          | TC-API-03, TC-API-04         |
+| R3          | UI displays list of books                 | TC-UI-01                     |
+| R4          | UI search filters books dynamically       | TC-UI-02, TC-UI-03, TC-UI-04 |
+| R5          | UI handles empty and invalid searches     | TC-UI-05, TC-UI-06, TC-UI-07 |
+| R6          | Valid user can login and access profile   | TC-AUTH-01, TC-AUTH-02       |
+| R7          | Invalid login is rejected                 | TC-AUTH-03, TC-AUTH-04       |
+| R8          | Unauthorized profile access is blocked    | TC-AUTH-05                   |
+| R9          | Session handling behaves correctly        | TC-AUTH-06, TC-AUTH-07       |

@@ -8,11 +8,6 @@ This document defines functional test cases for:
 - UI Books Search: `https://demoqa.com/books`
 - Authentication + Profile validation: `https://demoqa.com/login` and `https://demoqa.com/profile`
 
-Notes:
-
-- Backend search is not implemented; UI fetches all books and filters client-side.
-- Current dataset is expected to return **8 books** and include **title** and **author** fields.
-
 ## 2. Test Data
 
 - Base URL (UI): `https://demoqa.com`
@@ -349,9 +344,3 @@ Notes:
 - Username still visible
 
 ---
-
-# 7. Notes / Assumptions
-
-- Exact UI behavior for empty/whitespace search may vary; validate expected behavior and document final observed result.
-- Dataset count expectation (8) is based on assignment statement and current environment; if it changes, update expected value and note the change.
-- Performance thresholds (API response time) are guidance-level for this assignment.

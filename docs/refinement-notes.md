@@ -28,7 +28,7 @@
 
 ## 3. Authentication & Profile
 
-- No password policy is documented.  
+- No password policy is documented. Only appears a very quick red message when the password doesn´t complete all the paswords policies, was necessary to do a quick screenshot during the event to read it. Beside that:
   What are validation rules?
 
 - Expected behavior for accessing `/profile` without authentication is not formally described.  

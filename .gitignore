@@ -142,3 +142,11 @@ vite.config.ts.timestamp-*
 .env
 .env.*
 !.env.example
+
+ OS
+.DS_Store
+
+# Cypress artifacts
+cypress/reports/
+cypress/screenshots/
+cypress/videos/

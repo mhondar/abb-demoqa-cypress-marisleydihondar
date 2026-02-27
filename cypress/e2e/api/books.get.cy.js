@@ -21,17 +21,24 @@ describe('API - GET /BookStore/v1/Books', () => {
   });
 
   // Issue: Validate required fields (title, author)
-  it('TC-API-03 — Contract validation: required fields exist', () => {
+  it('TC-API-03 — Contract validation: required fields exist (title, author)', () => {
     cy.getBooks().then((res) => {
       expect(res.status).to.eq(200);
+      expect(res.body).to.have.property('books');
       expect(res.body.books).to.be.an('array').and.not.be.empty;
 
-      res.body.books.forEach((book) => {
-        expect(book).to.have.property('title');
-        expect(book.title).to.be.a('string').and.not.be.empty;
+      res.body.books.forEach((book, index) => {
+        expect(book, `book at index ${index}`).to.be.an('object');
 
+        // Title
+        expect(book).to.have.property('title');
+        expect(book.title).to.be.a('string');
+        expect(book.title.trim(), 'title should not be empty or whitespace').to.not.equal('');
+
+        // Author
         expect(book).to.have.property('author');
-        expect(book.author).to.be.a('string').and.not.be.empty;
+        expect(book.author).to.be.a('string');
+        expect(book.author.trim(), 'author should not be empty or whitespace').to.not.equal('');
       });
     });
   });

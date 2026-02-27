@@ -78,7 +78,7 @@ describe('UI - Books Search (/books)', () => {
     });
   });
 
-  it('TC-UI-06 (P1) — Edge: whitespace-only input behaves like empty OR returns no results', () => {
+  it('TC-UI-06 — Edge: whitespace-only input behaves like empty OR returns no results', () => {
     booksPage.getRowsCount().then((initialCount) => {
       expect(initialCount, 'initial row count').to.be.greaterThan(0);
       expect(data.whitespaceSearchTerm, 'whitespaceSearchTerm in fixture').to.exist;
@@ -91,5 +91,14 @@ describe('UI - Books Search (/books)', () => {
       booksPage.clearSearch();
       booksPage.getRowsCount().should('equal', initialCount);
     });
+  });
+
+  it('TC-UI-07 — Negative: non-matching term shows no results', () => {
+    booksPage.search(data.noResultsSearchTerm);
+    booksPage.getRowsCount().should('equal', 0);
+
+    // opcional: limpiar y volver a baseline (>0)
+    booksPage.clearSearch();
+    booksPage.getRowsCount().should('be.greaterThan', 0);
   });
 });

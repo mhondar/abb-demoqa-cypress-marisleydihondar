@@ -23,9 +23,45 @@ describe('UI - Books Search (/books)', () => {
     });
   });
 
-  it('TC-UI-02 — Search filters list by partial title (happy path)', () => {
+  it('TC-UI-02 — Search filters list dynamically by partial title', () => {
+    booksPage.getRowsCount().then((initialCount) => {
+      expect(initialCount).to.be.greaterThan(0);
+
+      booksPage.search(data.validSearchTerm);
+
+      // Verifica que el listado cambió dinámicamente
+      booksPage.getRowsCount().should('be.lessThan', initialCount);
+
+      // Verifica que el contenido coincide
+      booksPage.expectAllTitlesContain(data.validSearchTerm);
+    });
+  });
+
+  it('TC-UI-03 — Search is case-insensitive', () => {
+    // 1) Search with canonical term
     booksPage.search(data.validSearchTerm);
-    booksPage.expectAllTitlesContain(data.validSearchTerm);
+
+    booksPage.getRowsCount().then((countGit) => {
+      booksPage.getVisibleTitles().then((titlesGit) => {
+        // Normalizamos para comparación
+        const normalizedGit = titlesGit.map((t) => t.toLowerCase()).sort();
+
+        // 2) Search with mixed-case term
+        booksPage.search(data.caseInsensitiveTerm);
+
+        booksPage.getRowsCount().then((countMixed) => {
+          booksPage.getVisibleTitles().then((titlesMixed) => {
+            const normalizedMixed = titlesMixed.map((t) => t.toLowerCase()).sort();
+
+            // 3) Compare results
+            expect(countMixed, 'row count should match for different casing').to.eq(countGit);
+            expect(normalizedMixed, 'titles should match ignoring casing').to.deep.equal(
+              normalizedGit,
+            );
+          });
+        });
+      });
+    });
   });
 
   const assertBaseline = (expected) => booksPage.getRowsCount().should('equal', expected);

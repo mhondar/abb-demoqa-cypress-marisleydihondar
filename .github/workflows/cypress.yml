@@ -1,0 +1,106 @@
+name: Cypress E2E
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_target:
+        description: 'Qué quieres ejecutar'
+        required: true
+        default: 'all'
+        type: choice
+        options:
+          - all
+          - api
+          - ui
+          - smoke
+          - spec
+      spec_file:
+        description: 'Ruta del spec (solo si run_target=spec). Ej: cypress/e2e/ui/auth.login.cy.js'
+        required: false
+        default: ''
+
+jobs:
+  cypress:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Use Node.js 18
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Cypress command
+        id: build_cmd
+        shell: bash
+        run: |
+          TARGET="${{ github.event.inputs.run_target }}"
+          SPEC="${{ github.event.inputs.spec_file }}"
+
+          # defaults para push/PR (donde no hay inputs)
+          if [ -z "$TARGET" ]; then
+            TARGET="all"
+          fi
+
+          CMD="npx cypress run"
+
+          case "$TARGET" in
+            all)
+              ;;
+            api)
+              CMD="$CMD --spec \"cypress/e2e/api/**/*.cy.js\""
+              ;;
+            ui)
+              CMD="$CMD --spec \"cypress/e2e/ui/**/*.cy.js\""
+              ;;
+            smoke)
+              CMD="$CMD --spec \"cypress/e2e/ui/smoke.cy.js\""
+              ;;
+            spec)
+              if [ -z "$SPEC" ]; then
+                echo "spec_file es requerido cuando run_target=spec" >&2
+                exit 1
+              fi
+              CMD="$CMD --spec \"$SPEC\""
+              ;;
+            *)
+              echo "run_target inválido: $TARGET" >&2
+              exit 1
+              ;;
+          esac
+
+          echo "CYPRESS_CMD=$CMD" >> $GITHUB_OUTPUT
+          echo "Running: $CMD"
+
+      - name: Run Cypress
+        uses: cypress-io/github-action@v6
+        with:
+          command: ${{ steps.build_cmd.outputs.CYPRESS_CMD }}
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+
+      - name: Generate report
+        if: always()
+        run: |
+          npm run report:merge
+          npm run report:generate
+
+      - name: Upload Cypress artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cypress-artifacts
+          path: |
+            cypress/artifacts/screenshots/**
+            cypress/artifacts/videos/**
+            cypress/reports/**
+          if-no-files-found: ignore

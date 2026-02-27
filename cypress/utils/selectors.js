@@ -6,7 +6,9 @@ module.exports = {
     bookTitleLinks: 'table tbody a[href^="/books?search="]',
 
     // Table rows (useful for counting results)
+    tableBody: 'table tbody',
     bookRows: 'table tbody tr',
+    bookTitleLinks: 'table tbody tr td a',
   },
 
   login: {

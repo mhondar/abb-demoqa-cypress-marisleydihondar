@@ -18,7 +18,10 @@ class BooksPage {
   }
 
   getRowsCount() {
-    return cy.get(selectors.books.bookRows).its('length');
+    return cy.get('body').then(($body) => {
+      const rows = $body.find(selectors.books.bookRows);
+      return rows.length; // 0, 1, 2...
+    });
   }
 
   getVisibleTitles() {

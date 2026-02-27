@@ -24,7 +24,7 @@ jobs:
       - name: 📦 Setup Node.js 18
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 18.17.0
           cache: npm
 
       - name: 📚 Install Dependencies
@@ -39,6 +39,7 @@ jobs:
         env:
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+          NODE_OPTIONS: '--no-warnings'
         continue-on-error: true
 
       - name: 📊 Generate Report

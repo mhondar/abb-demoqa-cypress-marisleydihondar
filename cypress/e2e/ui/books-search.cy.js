@@ -1,42 +1,58 @@
 const booksPage = require('../../pages/books.page');
 const { loadFixture } = require('../../utils/data.utils');
 
-describe('Books - Search', () => {
-  it('filters results using centralized test data', () => {
-    booksPage.visit();
+describe('UI - Books Search (/books)', () => {
+  let data;
 
-    loadFixture('books/search.json').then((data) => {
-      booksPage.search(data.validSearchTerm);
-      booksPage.expectAllTitlesContain(data.validSearchTerm);
+  before(() => {
+    // Carga una sola vez para todo el spec
+    return loadFixture('books/search.json').then((fixture) => {
+      data = fixture;
     });
   });
-});
 
-describe('Books - Search functionality', () => {
   beforeEach(() => {
     booksPage.visit();
+    // Baseline: asegurar que empezamos sin filtro
+    booksPage.clearSearch();
   });
 
-  it('should filter results based on search input', () => {
-    // 1️⃣ Guardar cantidad inicial de libros
-    booksPage.getRowsCount().then((initialCount) => {
-      expect(initialCount).to.be.greaterThan(0);
+  it('TC-UI-01 — Books page loads and renders list', () => {
+    booksPage.getRowsCount().then((count) => {
+      expect(count, 'book rows count').to.be.greaterThan(0);
+    });
+  });
 
-      // 2️⃣ Buscar término
-      booksPage.search('Git');
+  it('TC-UI-02 — Search filters list by partial title (happy path)', () => {
+    booksPage.search(data.validSearchTerm);
+    booksPage.expectAllTitlesContain(data.validSearchTerm);
+  });
 
-      // 3️⃣ Validar que los resultados se filtran
-      booksPage.expectAllTitlesContain('Git');
+  const assertBaseline = (expected) => booksPage.getRowsCount().should('equal', expected);
 
-      // 4️⃣ Validar que la cantidad cambió
-      booksPage.getRowsCount().then((filteredCount) => {
-        expect(filteredCount).to.be.lessThan(initialCount);
-      });
+  it('TC-UI-05 — Empty search restores full dataset', () => {
+    booksPage.getRowsCount().then((baseline) => {
+      expect(baseline).to.be.greaterThan(0);
 
-      // 5️⃣ Limpiar búsqueda
+      booksPage.search(data.narrowSearchTerm);
+      booksPage.getRowsCount().should('be.lessThan', baseline);
+
       booksPage.clearSearch();
+      assertBaseline(baseline);
+    });
+  });
 
-      // 6️⃣ Validar que vuelve el listado completo
+  it('TC-UI-06 (P1) — Edge: whitespace-only input behaves like empty OR returns no results', () => {
+    booksPage.getRowsCount().then((initialCount) => {
+      expect(initialCount, 'initial row count').to.be.greaterThan(0);
+      expect(data.whitespaceSearchTerm, 'whitespaceSearchTerm in fixture').to.exist;
+
+      booksPage.search(data.whitespaceSearchTerm);
+
+      // retryable: espera a que se estabilice en 0 o baseline
+      booksPage.getRowsCount().should('be.oneOf', [0, initialCount]);
+
+      booksPage.clearSearch();
       booksPage.getRowsCount().should('equal', initialCount);
     });
   });

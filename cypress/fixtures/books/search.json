@@ -1,5 +1,7 @@
 {
   "validSearchTerm": "Git",
   "noResultsSearchTerm": "___no_results___",
-  "caseInsensitiveTerm": "gIt"
+  "caseInsensitiveTerm": "gIt",
+  "whitespaceSearchTerm": "   ",
+  "narrowSearchTerm": "Speaking"
 }

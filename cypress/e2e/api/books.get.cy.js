@@ -66,4 +66,24 @@ describe('API - GET /BookStore/v1/Books', () => {
       });
     });
   });
+
+  it('TC-API-05 — Idempotency: repeated calls return consistent dataset', () => {
+    cy.fixture('books/expectations.json').then(({ expectedBooksCount }) => {
+      cy.getBooks().then((firstRes) => {
+        expect(firstRes.status).to.eq(200);
+        expect(firstRes.body.books).to.have.length(expectedBooksCount);
+
+        const firstIsbnSet = firstRes.body.books.map((b) => b.isbn).sort();
+
+        cy.getBooks().then((secondRes) => {
+          expect(secondRes.status).to.eq(200);
+          expect(secondRes.body.books).to.have.length(expectedBooksCount);
+
+          const secondIsbnSet = secondRes.body.books.map((b) => b.isbn).sort();
+
+          expect(secondIsbnSet).to.deep.equal(firstIsbnSet);
+        });
+      });
+    });
+  });
 });

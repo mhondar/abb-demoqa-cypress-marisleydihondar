@@ -11,6 +11,8 @@ function loadEnvironmentConfig(environment) {
 }
 
 module.exports = defineConfig({
+  allowCypressEnv: false,
+
   e2e: {
     setupNodeEvents(on, config) {
       const environment = config.env.environment || 'qa';

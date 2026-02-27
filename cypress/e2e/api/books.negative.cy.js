@@ -1,5 +1,5 @@
 describe('API - Negative Scenarios: BookStore Books', () => {
-  it('TC-API-06 — Negative: unsupported method returns proper error', () => {
+  it('TC-API-06 — Negative: unsupported method returns proper error', { tags: ['defect'] }, () => {
     cy.env(['apiBaseUrl']).then(({ apiBaseUrl }) => {
       const base = apiBaseUrl || 'https://demoqa.com';
 
@@ -17,7 +17,7 @@ describe('API - Negative Scenarios: BookStore Books', () => {
     });
   });
 
-  it('TC-API-07 — Negative: invalid endpoint path returns 404', () => {
+  it('TC-API-07 — Negative: invalid endpoint path returns 404', { tags: ['defect'] }, () => {
     cy.env(['apiBaseUrl']).then(({ apiBaseUrl }) => {
       const base = apiBaseUrl || 'https://demoqa.com';
 

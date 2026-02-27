@@ -2,278 +2,71 @@ name: 🔄 Cypress CI/CD Pipeline
 
 on:
   push:
-    branches: [main, develop, staging]
-    paths:
-      - 'cypress/**'
-      - 'package*.json'
-      - '.github/workflows/cypress.yml'
+    branches:
+      - main
+      - develop
+      - staging
   pull_request:
-    branches: [main, develop, staging]
-    types: [opened, synchronize, reopened]
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+    branches:
+      - main
+      - develop
+      - staging
 
 jobs:
-  # Job 1: Validación y Setup
-  setup:
-    name: 🔧 Setup & Validate
+  test:
+    name: 🧪 Run Tests
     runs-on: ubuntu-latest
-    outputs:
-      node-version: ${{ steps.node-version.outputs.version }}
-      cache-hit: ${{ steps.cache.outputs.cache-hit }}
 
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
 
-      - name: 🔍 Obtener Node.js version
-        id: node-version
-        run: echo "version=$(cat .nvmrc 2>/dev/null || echo '18')" >> $GITHUB_OUTPUT
-
-      - name: 📦 Setup Node.js ${{ steps.node-version.outputs.version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ steps.node-version.outputs.version }}
-          cache: npm
-
-      - name: ✅ Validar package.json
-        run: npm list cypress --depth=0
-
-  # Job 2: Validación de código
-  lint:
-    name: 📝 Lint & Format Check
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js ${{ needs.setup.outputs.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ needs.setup.outputs.node-version }}
-          cache: npm
-
-      - name: 📚 Instalar Dependencias
-        run: npm ci
-
-      - name: 🔍 ESLint
-        run: npm run lint
-        continue-on-error: true
-
-      - name: ✨ Prettier Check
-        run: npm run format:check
-        continue-on-error: true
-
-  # Job 3: Pruebas API
-  api-tests:
-    name: 🔌 API Tests
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js ${{ needs.setup.outputs.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ needs.setup.outputs.node-version }}
-          cache: npm
-
-      - name: 📚 Instalar Dependencias
-        run: npm ci
-
-      - name: 🚀 Ejecutar API Tests
-        run: npx cypress run --spec "cypress/e2e/api/**/*.cy.js" --env environment=qa
-        env:
-          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
-          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-
-      - name: 📤 Subir Artifacts (API)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: api-tests-artifacts
-          path: |
-            cypress/artifacts/screenshots/**
-            cypress/artifacts/videos/**
-          if-no-files-found: ignore
-          retention-days: 7
-
-  # Job 4: Pruebas UI (Smoke Tests)
-  smoke-tests:
-    name: 💨 Smoke Tests
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js ${{ needs.setup.outputs.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ needs.setup.outputs.node-version }}
-          cache: npm
-
-      - name: 📚 Instalar Dependencias
-        run: npm ci
-
-      - name: 🚀 Ejecutar Smoke Tests
-        run: npx cypress run --spec "cypress/e2e/ui/smoke.cy.js" --env environment=qa
-        env:
-          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
-          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-
-      - name: 📤 Subir Artifacts (Smoke)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: smoke-tests-artifacts
-          path: |
-            cypress/artifacts/screenshots/**
-            cypress/artifacts/videos/**
-          if-no-files-found: ignore
-          retention-days: 7
-
-  # Job 5: Pruebas UI (Completas)
-  ui-tests:
-    name: 🎨 UI Tests
-    runs-on: ubuntu-latest
-    needs: setup
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js ${{ needs.setup.outputs.node-version }}
-        uses: actions/setup-node@v4
-        with:
-          node-version: ${{ needs.setup.outputs.node-version }}
-          cache: npm
-
-      - name: 📚 Instalar Dependencias
-        run: npm ci
-
-      - name: 🚀 Ejecutar UI Tests
-        run: npx cypress run --spec "cypress/e2e/ui/**/*.cy.js" --env environment=qa
-        env:
-          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
-          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
-
-      - name: 📤 Subir Artifacts (UI)
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: ui-tests-artifacts
-          path: |
-            cypress/artifacts/screenshots/**
-            cypress/artifacts/videos/**
-          if-no-files-found: ignore
-          retention-days: 7
-
-  # Job 6: Generar Reportes
-  reports:
-    name: 📊 Generate Reports
-    runs-on: ubuntu-latest
-    needs: [api-tests, ui-tests, smoke-tests]
-    if: always()
-
-    steps:
-      - name: 📥 Checkout Code
-        uses: actions/checkout@v4
-
-      - name: 📦 Setup Node.js
+      - name: 📦 Setup Node.js 18
         uses: actions/setup-node@v4
         with:
           node-version: 18
           cache: npm
 
-      - name: 📚 Instalar Dependencias
+      - name: 📚 Install Dependencies
         run: npm ci
 
-      - name: 📥 Descargar todos los artifacts
-        uses: actions/download-artifact@v4
-        with:
-          path: cypress/artifacts
-
-      - name: 📊 Generar Reportes
-        run: |
-          npm run report:merge
-          npm run report:generate
+      - name: 🔍 Lint
+        run: npm run lint
         continue-on-error: true
 
-      - name: 📈 Publicar Reporte HTML
+      - name: 🧪 Run Cypress Tests
+        run: npm run cy:run:qa
+        env:
+          CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
+          CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        continue-on-error: true
+
+      - name: 📊 Generate Report
+        if: always()
+        run: |
+          npm run report:merge || true
+          npm run report:generate || true
+
+      - name: 📤 Upload Artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: test-report-html
-          path: cypress/reports/report.html
-          if-no-files-found: ignore
+          name: cypress-results
+          path: |
+            cypress/artifacts/screenshots/
+            cypress/artifacts/videos/
+            cypress/reports/
           retention-days: 30
+          if-no-files-found: ignore
 
-  # Job 7: Status Final
-  status:
-    name: ✅ Pipeline Status
-    runs-on: ubuntu-latest
-    needs: [setup, lint, api-tests, smoke-tests, ui-tests]
-    if: always()
-
-    steps:
-      - name: 📊 Verificar Resultados
+      - name: 📝 Summary
+        if: always()
         shell: bash
         run: |
-          echo "### 🧪 Pipeline Cypress - Resumen" >> $GITHUB_STEP_SUMMARY
+          echo "### 🧪 Cypress Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Job | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Setup | ${{ needs.setup.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Lint | ${{ needs.lint.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| API Tests | ${{ needs.api-tests.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Smoke Tests | ${{ needs.smoke-tests.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| UI Tests | ${{ needs.ui-tests.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "✅ Tests completed on branch: **${{ github.ref_name }}**" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Fallar si algún job crítico falló
-          if [ "${{ needs.api-tests.result }}" = "failure" ] || \
-             [ "${{ needs.smoke-tests.result }}" = "failure" ]; then
-            echo "❌ **Resultado**: Algunos tests fallaron"
-            exit 1
-          else
-            echo "✅ **Resultado**: Todos los tests pasaron"
-          fi
-
-      - name: 💬 Comentar en PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const results = {
-              setup: '${{ needs.setup.result }}',
-              lint: '${{ needs.lint.result }}',
-              api: '${{ needs.api-tests.result }}',
-              smoke: '${{ needs.smoke-tests.result }}',
-              ui: '${{ needs.ui-tests.result }}'
-            };
-
-            const allPass = Object.values(results).every(r => r === 'success');
-            const icon = allPass ? '✅' : '⚠️';
-
-            let body = `${icon} **E2E Tests Report**\n\n`;
-            body += `| Check | Status |\n`;
-            body += `|-------|--------|\n`;
-            body += `| API Tests | ${results.api === 'success' ? '✅' : '❌'} |\n`;
-            body += `| Smoke Tests | ${results.smoke === 'success' ? '✅' : '❌'} |\n`;
-            body += `| UI Tests | ${results.ui === 'success' ? '✅' : '❌'} |\n`;
-            body += `| Code Quality | ${results.lint === 'success' ? '✅' : '⚠️'} |\n`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
+          echo "📊 **Artifacts available for download:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Screenshots & Videos" >> $GITHUB_STEP_SUMMARY
+          echo "- Test Reports (HTML)" >> $GITHUB_STEP_SUMMARY

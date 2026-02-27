@@ -1,0 +1,150 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 3,
+    "passes": 1,
+    "pending": 0,
+    "failures": 2,
+    "start": "2026-02-27T16:38:18.792Z",
+    "end": "2026-02-27T16:38:21.269Z",
+    "duration": 2477,
+    "testsRegistered": 3,
+    "passPercent": 33.33333333333333,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "c6eb673a-b474-466e-9033-d31a0ae50871",
+      "title": "",
+      "fullFile": "cypress/e2e/api/books.negative.cy.js",
+      "file": "cypress/e2e/api/books.negative.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "16ec3b82-f89a-4e5f-b96e-fe28163a1e27",
+          "title": "API - Negative Scenarios: BookStore Books",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "TC-API-06 — Negative: unsupported method returns proper error",
+              "fullTitle": "API - Negative Scenarios: BookStore Books TC-API-06 — Negative: unsupported method returns proper error",
+              "timedOut": null,
+              "duration": 207,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.env(['apiBaseUrl']).then(({\n  apiBaseUrl\n}) => {\n  const base = apiBaseUrl || 'https://demoqa.com';\n  cy.request({\n    method: 'POST',\n    url: `${base}/BookStore/v1/Books`,\n    failOnStatusCode: false,\n    body: {}\n  }).then(res => {\n    // Expected: 4xx (e.g., 405 Method Not Allowed)\n    // Observed: 500 -> API defect (server error for unsupported method)\n    expect(res.status, 'BUG: POST /Books should not return 5xx').to.not.be.within(500, 599);\n    expect(res.status, 'POST /Books should not succeed').to.not.be.within(200, 299);\n  });\n});",
+              "err": {
+                "message": "AssertionError: BUG: POST /Books should not return 5xx: expected 500 to not be within 500..599",
+                "estack": "AssertionError: BUG: POST /Books should not return 5xx: expected 500 to not be within 500..599\n    at Context.eval (webpack://abb-demoqa-cypress-marisleydihondar/./cypress/e2e/api/books.negative.cy.js:14:79)\n    at getRet (https://demoqa.com/__cypress/runner/cypress_runner.js:122806:20)\n    at tryCatcher (https://demoqa.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://demoqa.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://demoqa.com/__cypress/runner/cypress_runner.js:122817:66)\n    at Context.then (https://demoqa.com/__cypress/runner/cypress_runner.js:123068:21)",
+                "diff": null
+              },
+              "uuid": "9f56b123-662b-4ed4-97db-3de85156745c",
+              "parentUUID": "16ec3b82-f89a-4e5f-b96e-fe28163a1e27",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-API-07 — Negative: invalid endpoint path returns 404",
+              "fullTitle": "API - Negative Scenarios: BookStore Books TC-API-07 — Negative: invalid endpoint path returns 404",
+              "timedOut": null,
+              "duration": 200,
+              "state": "failed",
+              "speed": null,
+              "pass": false,
+              "fail": true,
+              "pending": false,
+              "context": null,
+              "code": "cy.env(['apiBaseUrl']).then(({\n  apiBaseUrl\n}) => {\n  const base = apiBaseUrl || 'https://demoqa.com';\n  cy.request({\n    method: 'GET',\n    url: `${base}/BookStore/v1/BooksXYZ`,\n    failOnStatusCode: false\n  }).then(res => {\n    // Expected: 404 Not Found\n    // Observed: 200 -> API defect (invalid routes should not succeed)\n    expect(res.status, 'BUG: invalid endpoint must not return 2xx').to.not.be.within(200, 299);\n  });\n});",
+              "err": {
+                "message": "AssertionError: BUG: invalid endpoint must not return 2xx: expected 200 to not be within 200..299",
+                "estack": "AssertionError: BUG: invalid endpoint must not return 2xx: expected 200 to not be within 200..299\n    at Context.eval (webpack://abb-demoqa-cypress-marisleydihondar/./cypress/e2e/api/books.negative.cy.js:31:82)\n    at getRet (https://demoqa.com/__cypress/runner/cypress_runner.js:122806:20)\n    at tryCatcher (https://demoqa.com/__cypress/runner/cypress_runner.js:1777:23)\n    at Promise.attempt.Promise.try (https://demoqa.com/__cypress/runner/cypress_runner.js:4285:29)\n    at Context.thenFn (https://demoqa.com/__cypress/runner/cypress_runner.js:122817:66)\n    at Context.then (https://demoqa.com/__cypress/runner/cypress_runner.js:123068:21)",
+                "diff": null
+              },
+              "uuid": "3196f5d1-cb55-4c20-bdd3-c532e1f12410",
+              "parentUUID": "16ec3b82-f89a-4e5f-b96e-fe28163a1e27",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-API-09 — Edge: response handles additional query params gracefully",
+              "fullTitle": "API - Negative Scenarios: BookStore Books TC-API-09 — Edge: response handles additional query params gracefully",
+              "timedOut": null,
+              "duration": 70,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "cy.env(['apiBaseUrl']).then(({\n  apiBaseUrl\n}) => {\n  const base = apiBaseUrl || 'https://demoqa.com';\n  cy.request({\n    method: 'GET',\n    url: `${base}/BookStore/v1/Books?foo=bar`,\n    failOnStatusCode: false\n  }).then(res => {\n    // Either returns same dataset (200) or a 4xx, but must not be 500\n    expect(res.status).to.not.be.within(500, 599);\n    if (res.status === 200) {\n      expect(res.body).to.have.property('books');\n      expect(res.body.books).to.be.an('array');\n    }\n  });\n});",
+              "err": {},
+              "uuid": "bf9d326b-bb32-42ca-9fd2-00943007c6ea",
+              "parentUUID": "16ec3b82-f89a-4e5f-b96e-fe28163a1e27",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": ["bf9d326b-bb32-42ca-9fd2-00943007c6ea"],
+          "failures": [
+            "9f56b123-662b-4ed4-97db-3de85156745c",
+            "3196f5d1-cb55-4c20-bdd3-c532e1f12410"
+          ],
+          "pending": [],
+          "skipped": [],
+          "duration": 477,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

@@ -1,0 +1,181 @@
+{
+  "stats": {
+    "suites": 1,
+    "tests": 5,
+    "passes": 5,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-02-27T16:40:58.621Z",
+    "end": "2026-02-27T16:41:02.343Z",
+    "duration": 3722,
+    "testsRegistered": 5,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "6270a296-be29-449b-82ed-c26ccffce0f7",
+      "title": "",
+      "fullFile": "cypress/e2e/ui/books-search.cy.js",
+      "file": "cypress/e2e/ui/books-search.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+          "title": "UI - Books Search (/books)",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "TC-UI-01 — Books page loads and renders list",
+              "fullTitle": "UI - Books Search (/books) TC-UI-01 — Books page loads and renders list",
+              "timedOut": null,
+              "duration": 774,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "booksPage.getRowsCount().then(count => {\n  expect(count, 'book rows count').to.be.greaterThan(0);\n});",
+              "err": {},
+              "uuid": "0c086aa7-6acc-43e7-bc1a-05a1672d1662",
+              "parentUUID": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-UI-02 — Search filters list dynamically by partial title",
+              "fullTitle": "UI - Books Search (/books) TC-UI-02 — Search filters list dynamically by partial title",
+              "timedOut": null,
+              "duration": 570,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "booksPage.getRowsCount().then(initialCount => {\n  expect(initialCount).to.be.greaterThan(0);\n  booksPage.search(data.validSearchTerm);\n  // Verifica que el listado cambió dinámicamente\n  booksPage.getRowsCount().should('be.lessThan', initialCount);\n  // Verifica que el contenido coincide\n  booksPage.expectAllTitlesContain(data.validSearchTerm);\n});",
+              "err": {},
+              "uuid": "6cc9db3d-a7f7-485a-98a5-c6e86c72709d",
+              "parentUUID": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-UI-03 — Search is case-insensitive",
+              "fullTitle": "UI - Books Search (/books) TC-UI-03 — Search is case-insensitive",
+              "timedOut": null,
+              "duration": 812,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1) Search with canonical term\nbooksPage.search(data.validSearchTerm);\nbooksPage.getRowsCount().then(countGit => {\n  booksPage.getVisibleTitles().then(titlesGit => {\n    // Normalizamos para comparación\n    const normalizedGit = titlesGit.map(t => t.toLowerCase()).sort();\n    // 2) Search with mixed-case term\n    booksPage.search(data.caseInsensitiveTerm);\n    booksPage.getRowsCount().then(countMixed => {\n      booksPage.getVisibleTitles().then(titlesMixed => {\n        const normalizedMixed = titlesMixed.map(t => t.toLowerCase()).sort();\n        // 3) Compare results\n        expect(countMixed, 'row count should match for different casing').to.eq(countGit);\n        expect(normalizedMixed, 'titles should match ignoring casing').to.deep.equal(normalizedGit);\n      });\n    });\n  });\n});",
+              "err": {},
+              "uuid": "5690d0a7-b5e1-44e1-915c-1af4af315282",
+              "parentUUID": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-UI-05 — Empty search restores full dataset",
+              "fullTitle": "UI - Books Search (/books) TC-UI-05 — Empty search restores full dataset",
+              "timedOut": null,
+              "duration": 748,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "booksPage.getRowsCount().then(baseline => {\n  expect(baseline).to.be.greaterThan(0);\n  booksPage.search(data.narrowSearchTerm);\n  booksPage.getRowsCount().should('be.lessThan', baseline);\n  booksPage.clearSearch();\n  assertBaseline(baseline);\n});",
+              "err": {},
+              "uuid": "6e3d2ba8-bea4-4441-bed8-d569016cf0b0",
+              "parentUUID": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+              "isHook": false,
+              "skipped": false
+            },
+            {
+              "title": "TC-UI-06 (P1) — Edge: whitespace-only input behaves like empty OR returns no results",
+              "fullTitle": "UI - Books Search (/books) TC-UI-06 (P1) — Edge: whitespace-only input behaves like empty OR returns no results",
+              "timedOut": null,
+              "duration": 710,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "booksPage.getRowsCount().then(initialCount => {\n  expect(initialCount, 'initial row count').to.be.greaterThan(0);\n  expect(data.whitespaceSearchTerm, 'whitespaceSearchTerm in fixture').to.exist;\n  booksPage.search(data.whitespaceSearchTerm);\n  // retryable: espera a que se estabilice en 0 o baseline\n  booksPage.getRowsCount().should('be.oneOf', [0, initialCount]);\n  booksPage.clearSearch();\n  booksPage.getRowsCount().should('equal', initialCount);\n});",
+              "err": {},
+              "uuid": "d3c80855-f3fa-4d2d-95e8-f518d4bb5549",
+              "parentUUID": "4a3c78f8-adf9-4a7b-837f-0799ad0a99c5",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": [
+            "0c086aa7-6acc-43e7-bc1a-05a1672d1662",
+            "6cc9db3d-a7f7-485a-98a5-c6e86c72709d",
+            "5690d0a7-b5e1-44e1-915c-1af4af315282",
+            "6e3d2ba8-bea4-4441-bed8-d569016cf0b0",
+            "d3c80855-f3fa-4d2d-95e8-f518d4bb5549"
+          ],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 3614,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

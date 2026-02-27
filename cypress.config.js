@@ -1,4 +1,5 @@
 const { defineConfig } = require('cypress');
+const fs = require('fs');
 require('dotenv').config();
 
 function loadEnvironmentConfig(environment) {
@@ -12,6 +13,7 @@ function loadEnvironmentConfig(environment) {
 
 module.exports = defineConfig({
   allowCypressEnv: false,
+
   reporter: 'mochawesome',
   reporterOptions: {
     reportDir: 'cypress/reports',
@@ -19,10 +21,29 @@ module.exports = defineConfig({
     html: false,
     json: true,
   },
-  e2e: {
-    setupNodeEvents(on, config) {
-      const environment = config.env.environment || 'qa';
 
+  e2e: {
+    // Screenshots
+    screenshotOnRunFailure: true,
+    screenshotsFolder: 'cypress/artifacts/screenshots',
+
+    // Videos
+    video: false,
+    videosFolder: 'cypress/artifacts/videos',
+    videoCompression: 32,
+
+    // Limpia assets antes de cada run
+    trashAssetsBeforeRuns: true,
+
+    setupNodeEvents(on, config) {
+      //  borra videos de specs que pasaron
+      on('after:spec', (spec, results) => {
+        if (results?.video && results.stats?.failures === 0) {
+          fs.unlinkSync(results.video);
+        }
+      });
+
+      const environment = config.env.environment || 'qa';
       const envConfig = loadEnvironmentConfig(environment);
 
       config.baseUrl = envConfig.baseUrl || config.baseUrl;

@@ -17,11 +17,16 @@ module.exports = {
     passwordInput: '#password',
     loginButton: '#login',
     errorMessage: '#name',
+    logoutButton: '#submit',
   },
 
   profile: {
     usernameLabel: '#userName-value',
     logoutButton: '#submit',
     bookRows: 'table tbody tr',
+  },
+
+  navigation: {
+    profileMenuItem: 'a.router-link[href="/profile"]',
   },
 };

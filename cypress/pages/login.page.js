@@ -19,7 +19,7 @@ class LoginPage {
   }
 
   submit() {
-    cy.get(selectors.login.loginButton).should('be.enabled');
+    cy.get(selectors.login.loginButton).should('be.visible').and('be.enabled');
     cy.get(selectors.login.loginButton).click();
   }
 

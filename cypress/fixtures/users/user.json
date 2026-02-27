@@ -1,4 +1,5 @@
 {
   "usernameKey": "username",
-  "passwordKey": "password"
+  "passwordKey": "password",
+  "invalidPassword": "wrong_password_123!"
 }

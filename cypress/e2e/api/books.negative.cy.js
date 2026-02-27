@@ -9,11 +9,10 @@ describe('API - Negative Scenarios: BookStore Books', () => {
         failOnStatusCode: false,
         body: {},
       }).then((res) => {
-        // Expected: 4xx (e.g., 405). Actual (observed): 500 -> API defect.
-        expect(res.status, 'POST should not return a server error (bug if 5xx)').to.not.be.within(
-          500,
-          599,
-        );
+        // Expected: 4xx (e.g., 405 Method Not Allowed)
+        // Observed: 500 -> API defect (server error for unsupported method)
+        expect(res.status, 'BUG: POST /Books should not return 5xx').to.not.be.within(500, 599);
+        expect(res.status, 'POST /Books should not succeed').to.not.be.within(200, 299);
       });
     });
   });
@@ -27,11 +26,9 @@ describe('API - Negative Scenarios: BookStore Books', () => {
         url: `${base}/BookStore/v1/BooksXYZ`,
         failOnStatusCode: false,
       }).then((res) => {
-        // Expected: 404. Actual (observed): 200 -> API defect.
-        expect(res.status, 'invalid route must not succeed (bug if 2xx)').to.not.be.within(
-          200,
-          299,
-        );
+        // Expected: 404 Not Found
+        // Observed: 200 -> API defect (invalid routes should not succeed)
+        expect(res.status, 'BUG: invalid endpoint must not return 2xx').to.not.be.within(200, 299);
       });
     });
   });

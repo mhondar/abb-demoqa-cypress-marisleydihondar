@@ -1,9 +1,15 @@
-## Observed API Issues (Negative Scenarios)
+# Known Issues (Observed during API Negative Testing)
 
-- TC-API-06: `POST /BookStore/v1/Books` returns **500**.
-  - Expected: 4xx (e.g., 405 Method Not Allowed)
-  - Impact: API exposes server error for unsupported method.
+## TC-API-06 — Unsupported method returns 500
 
-- TC-API-07: `GET /BookStore/v1/BooksXYZ` returns **200**.
-  - Expected: 404 Not Found
-  - Impact: Invalid routes are not handled correctly (possible fallback routing issue).
+- Endpoint: `POST /BookStore/v1/Books`
+- Expected: 4xx (e.g., 405 Method Not Allowed)
+- Observed: 500 Internal Server Error
+- Impact: The API exposes a server error for an unsupported method instead of a client error.
+
+## TC-API-07 — Invalid endpoint returns 200
+
+- Endpoint: `GET /BookStore/v1/BooksXYZ`
+- Expected: 404 Not Found
+- Observed: 200 OK
+- Impact: Invalid routes unexpectedly succeed, which can hide client integration issues and break routing assumptions.

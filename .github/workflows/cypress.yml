@@ -1,4 +1,4 @@
-name: Cypress E2E
+name: DemoQA Book Store - E2E Tests
 
 on:
   workflow_dispatch:

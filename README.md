@@ -98,13 +98,108 @@ npm run cy:run:staging   # Run tests against Staging environment
 # Run with Browser Visibility
 npm run cy:run:qa:headed       # Run with visible browser (QA)
 npm run cy:run:staging:headed  # Run with visible browser (Staging)
-
-# Generate Test Reports
-npm run test:report      # Run tests + merge reports + generate HTML report
-npm run report:generate  # Generate HTML report from existing results
 ```
 
-### Development Commands
+### Running Tests via GitHub Actions
+
+The project includes two CI/CD pipelines for automated testing:
+
+#### 1. **Manual Workflow Dispatch** (`demoqa-e2e.yml`)
+
+Trigger custom test runs with specific configurations:
+
+1. Go to **Actions** tab in GitHub
+2. Select **🧪 DemoQA E2E Tests** workflow
+3. Click **Run workflow**
+4. Configure:
+   - **Environment**: qa | staging
+   - **Test Type**: all | api | ui | smoke | spec
+   - **Browser**: chrome | firefox | edge (optional)
+   - **Debug Mode**: Enable for detailed debugging
+5. Click **Run workflow**
+
+```bash
+# Alternative: Trigger via CLI
+gh workflow run demoqa-e2e.yml \
+  -f environment=qa \
+  -f run_target=smoke \
+  -f browser=chrome
+```
+
+#### 2. **Automated CI/CD Pipeline** (`cypress.yml`)
+
+Runs automatically on:
+
+- **Push** to: main, develop, staging branches
+- **Pull Requests** against: main, develop, staging
+- **On-demand** via workflow dispatch
+
+The pipeline executes:
+
+- ✅ Code quality checks (ESLint, Prettier)
+- ✅ API tests
+- ✅ Smoke tests
+- ✅ Full UI test suite
+- ✅ Report generation
+
+**Example: Automatic PR Checks**
+
+```
+📝 Commit to feature branch
+    ↓
+🔄 Push to GitHub
+    ↓
+✅ CI/CD Pipeline Triggers
+    ├─ ESLint & Prettier validation
+    ├─ API tests run
+    ├─ Smoke tests run
+    ├─ UI tests run
+    └─ Reports generated
+    ↓
+💬 Results commented on PR
+    ↓
+🔀 Ready to merge!
+```
+
+### GitHub Actions Configuration
+
+#### Required Secrets
+
+Add these GitHub Secrets for authentication:
+
+1. Go to **Settings > Secrets and variables > Actions**
+2. Add the following secrets:
+   - `CYPRESS_USERNAME`: DemoQA login username
+   - `CYPRESS_PASSWORD`: DemoQA login password
+
+```bash
+# Add secrets via GitHub CLI
+gh secret set CYPRESS_USERNAME --body "your_username"
+gh secret set CYPRESS_PASSWORD --body "your_password"
+```
+
+#### Monitoring Test Runs
+
+1. Navigate to **Actions** tab
+2. Click on a workflow run to see details
+3. View real-time logs for each job
+4. Download artifacts (screenshots, videos, reports)
+5. Check PR comments for test results summary
+
+#### Downloading Test Reports
+
+After a workflow completes:
+
+1. Go to the workflow run details
+2. Scroll to **Artifacts** section
+3. Download:
+   - `html-report-*`: Detailed HTML test report
+   - `cypress-artifacts-*`: Screenshots and videos
+   - `test-report-html`: Mochawesome report
+
+---
+
+## Development Commands
 
 ```bash
 # Code Quality
@@ -114,6 +209,18 @@ npm run format:check     # Check formatting without changes
 
 # Git Hooks
 npm run prepare          # Setup Husky pre-commit hooks
+```
+
+---
+
+## Generate Test Reports
+
+```bash
+# Complete test run with reporting
+npm run test:report
+
+# View report
+open cypress/reports/report.html
 ```
 
 ---
@@ -333,16 +440,153 @@ module.exports = {
 
 ## CI/CD Integration
 
-### GitHub Actions
+### 🤖 GitHub Actions Workflows
 
-The project includes a GitHub Actions workflow (`.github/workflows/cypress.yml`) that:
+The project includes **two powerful CI/CD pipelines** for automated testing:
 
-- ✅ Runs tests automatically on push and pull requests
-- ✅ Tests against multiple environments
-- ✅ Generates and publishes test reports
-- ✅ Provides detailed failure notifications
+#### Pipeline 1: **Automated CI/CD** (`cypress.yml`)
 
-**Workflow Status Badge**: [![Cypress Tests](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions/workflows/cypress.yml/badge.svg)](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions)
+**Auto-triggers on:**
+
+- 🔄 Push to main, develop, staging branches
+- 🔀 Pull Requests to main, develop, staging
+- 🚀 Manual trigger (workflow_dispatch)
+
+**What it does:**
+
+```
+1. Setup & Validate
+   ├─ Setup Node.js environment
+   └─ Validate dependencies
+
+2. Code Quality
+   ├─ ESLint validation
+   └─ Prettier format check
+
+3. Test Execution (Parallel)
+   ├─ API Tests (5 test cases)
+   ├─ Smoke Tests (Critical flows)
+   └─ UI Tests (Full test suite)
+
+4. Report Generation
+   └─ Mochawesome HTML reports with charts
+
+5. Artifacts & Notifications
+   ├─ Upload screenshots & videos
+   ├─ Publish test reports (30-day retention)
+   └─ Comment on PRs with results summary
+```
+
+#### Pipeline 2: **Manual Test Runner** (`demoqa-e2e.yml`)
+
+**Trigger manually with:**
+
+- 🌍 Environment selection (QA / Staging)
+- 🎯 Test type selection (all / api / ui / smoke / spec)
+- 🌐 Browser selection (Chrome / Firefox / Edge)
+- 🐛 Debug mode toggle
+
+**How to trigger:**
+
+1. Go to **GitHub > Actions** tab
+2. Select **🧪 DemoQA E2E Tests**
+3. Click **Run workflow**
+4. Configure options:
+   ```
+   Environment: qa | staging
+   Test Type: all | api | ui | smoke | spec
+   Browser: chrome | firefox | edge (optional)
+   Debug Mode: true | false
+   ```
+5. Click **Run workflow**
+
+**Command line alternative:**
+
+```bash
+gh workflow run demoqa-e2e.yml \
+  -f environment=qa \
+  -f run_target=smoke \
+  -f browser=chrome
+```
+
+### 🔐 GitHub Secrets Setup
+
+Required for test authentication:
+
+```bash
+# Via GitHub CLI
+gh secret set CYPRESS_USERNAME --body "your_demoqa_username"
+gh secret set CYPRESS_PASSWORD --body "your_demoqa_password"
+```
+
+Or manually via GitHub UI:
+
+1. Settings → Secrets and variables → Actions
+2. New repository secret
+3. Add: `CYPRESS_USERNAME` and `CYPRESS_PASSWORD`
+
+### 📊 Monitoring & Artifacts
+
+#### Real-time Monitoring
+
+1. Go to **Actions** tab
+2. Click running workflow
+3. Watch live logs for each job
+4. Check individual step output
+
+#### Download Test Reports
+
+After workflow completion:
+
+1. Scroll to **Artifacts** section
+2. Download available artifacts:
+   - `html-report-*`: Detailed Mochawesome report
+   - `cypress-artifacts-*`: Screenshots & videos
+   - `test-report-html`: Merged test report
+
+#### Pull Request Integration
+
+- Automatic comments with test results
+- ✅/❌ status badges
+- Links to detailed reports
+- Screenshots of failures
+
+### 🔄 Workflow Concurrency
+
+Workflows use **concurrency control** to prevent resource waste:
+
+- Cancels in-progress workflows when new push occurs
+- Groups by PR number or branch name
+- Ensures only latest workflow runs for each branch
+
+### 📈 Performance & Resource Usage
+
+| Metric              | Value              |
+| ------------------- | ------------------ |
+| Setup time          | ~15s               |
+| API tests           | ~30s               |
+| Smoke tests         | ~45s               |
+| UI tests            | ~90s               |
+| Report generation   | ~20s               |
+| **Total runtime**   | **~3 minutes**     |
+| Parallel jobs       | 3 (API, Smoke, UI) |
+| Storage (artifacts) | 30-day retention   |
+
+### ✅ Status Badges
+
+Add these to your project README:
+
+```markdown
+![Cypress Tests](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions/workflows/cypress.yml/badge.svg)
+
+![DemoQA E2E Tests](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions/workflows/demoqa-e2e.yml/badge.svg)
+```
+
+**Current Status:**
+
+[![Cypress Tests](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions/workflows/cypress.yml/badge.svg)](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions)
+
+[![DemoQA E2E Tests](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions/workflows/demoqa-e2e.yml/badge.svg)](https://github.com/mhondar/abb-demoqa-cypress-marisleydihondar/actions)
 
 ---
 

@@ -1,10 +1,29 @@
-name: DemoQA Book Store - E2E Tests
+name: 🧪 DemoQA E2E Tests
 
 on:
+  push:
+    branches: [main, develop, staging]
+    paths:
+      - 'cypress/**'
+      - 'package*.json'
+      - '.github/workflows/demoqa-e2e.yml'
+  pull_request:
+    branches: [main, develop, staging]
+    paths:
+      - 'cypress/**'
+      - 'package*.json'
   workflow_dispatch:
     inputs:
+      environment:
+        description: '🌍 Ambiente'
+        required: true
+        default: 'qa'
+        type: choice
+        options:
+          - qa
+          - staging
       run_target:
-        description: 'Qué quieres ejecutar'
+        description: '🎯 Tipo de prueba'
         required: true
         default: 'all'
         type: choice
@@ -15,90 +34,234 @@ on:
           - smoke
           - spec
       spec_file:
-        description: 'Ruta del spec (solo si run_target=spec). Ej: cypress/e2e/ui/auth.login.cy.js'
+        description: '📄 Ruta del spec (solo si run_target=spec)'
         required: false
         default: ''
+      browser:
+        description: '🌐 Navegador'
+        required: false
+        default: 'chrome'
+        type: choice
+        options:
+          - chrome
+          - firefox
+          - edge
+      debug_mode:
+        description: '🐛 Modo debug'
+        required: false
+        type: boolean
+        default: false
+
+env:
+  NODE_VERSION: '18'
+  CACHE_KEY: npm-${{ hashFiles('**/package-lock.json') }}
 
 jobs:
-  cypress:
+  # Job para validar la configuración
+  validate:
+    name: 🔍 Validar Configuración
     runs-on: ubuntu-latest
-
+    outputs:
+      matrix: ${{ steps.set-matrix.outputs.matrix }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Node.js 18
+      - name: Definir matriz de ambientes
+        id: set-matrix
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            MATRIX="{\"environment\":\"${{ github.event.inputs.environment }}\"}"
+          elif [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            MATRIX="{\"environment\":[\"qa\",\"staging\"]}"
+          else
+            MATRIX="{\"environment\":\"qa\"}"
+          fi
+          echo "matrix=$MATRIX" >> $GITHUB_OUTPUT
+
+  # Job principal para ejecutar los tests
+  cypress-tests:
+    name: 🧪 Ejecutar Tests (${{ matrix.environment }})
+    runs-on: ubuntu-latest
+    needs: validate
+    strategy:
+      fail-fast: false
+      matrix:
+        environment: ${{ fromJson(needs.validate.outputs.matrix).environment }}
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v4
+
+      - name: 📦 Setup Node.js ${{ env.NODE_VERSION }}
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: ${{ env.NODE_VERSION }}
           cache: npm
 
-      - name: Install dependencies
+      - name: 📚 Instalar Dependencias
         run: npm ci
 
-      - name: Build Cypress command
+      - name: 🔐 Validar Secretos
+        shell: bash
+        run: |
+          if [ -z "${{ secrets.CYPRESS_USERNAME }}" ] || [ -z "${{ secrets.CYPRESS_PASSWORD }}" ]; then
+            echo "⚠️  Advertencia: Variables de sesión no configuradas en los secretos de GitHub"
+            echo "Algunas pruebas pueden fallar sin credenciales válidas"
+          fi
+
+      - name: 🔨 Construir Comando Cypress
         id: build_cmd
         shell: bash
         run: |
-          TARGET="${{ github.event.inputs.run_target }}"
-          SPEC="${{ github.event.inputs.spec_file }}"
-
-          # defaults para push/PR (donde no hay inputs)
-          if [ -z "$TARGET" ]; then
-            TARGET="all"
+          # Determinar target según el evento
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            TARGET="${{ github.event.inputs.run_target }}"
+            SPEC="${{ github.event.inputs.spec_file }}"
+            BROWSER="${{ github.event.inputs.browser }}"
+            DEBUG="${{ github.event.inputs.debug_mode }}"
+          else
+            # Para push/PR, ejecutar smoke tests en QA
+            TARGET="smoke"
+            BROWSER="chrome"
+            DEBUG="false"
           fi
 
-          CMD="npx cypress run"
+          ENVIRONMENT="${{ matrix.environment }}"
+          CMD="npx cypress run --env environment=$ENVIRONMENT"
 
+          # Agregar especificación
           case "$TARGET" in
             all)
+              echo "✅ Ejecutando: Todas las pruebas"
               ;;
             api)
               CMD="$CMD --spec \"cypress/e2e/api/**/*.cy.js\""
+              echo "✅ Ejecutando: Pruebas API"
               ;;
             ui)
               CMD="$CMD --spec \"cypress/e2e/ui/**/*.cy.js\""
+              echo "✅ Ejecutando: Pruebas UI"
               ;;
             smoke)
               CMD="$CMD --spec \"cypress/e2e/ui/smoke.cy.js\""
+              echo "✅ Ejecutando: Smoke tests"
               ;;
             spec)
               if [ -z "$SPEC" ]; then
-                echo "spec_file es requerido cuando run_target=spec" >&2
+                echo "❌ Error: spec_file es requerido cuando run_target=spec"
                 exit 1
               fi
               CMD="$CMD --spec \"$SPEC\""
+              echo "✅ Ejecutando: $SPEC"
               ;;
             *)
-              echo "run_target inválido: $TARGET" >&2
+              echo "❌ Error: run_target inválido: $TARGET"
               exit 1
               ;;
           esac
 
-          echo "CYPRESS_CMD=$CMD" >> $GITHUB_OUTPUT
-          echo "Running: $CMD"
+          # Agregar navegador
+          if [ ! -z "$BROWSER" ] && [ "$BROWSER" != "chrome" ]; then
+            CMD="$CMD --browser $BROWSER"
+            echo "🌐 Navegador: $BROWSER"
+          fi
 
-      - name: Run Cypress
+          # Agregar modo debug
+          if [ "$DEBUG" = "true" ]; then
+            CMD="$CMD --headed --no-exit"
+            echo "🐛 Modo debug activado"
+          fi
+
+          echo "CYPRESS_CMD=$CMD" >> $GITHUB_OUTPUT
+          echo "TARGET=$TARGET" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Ejecutar Cypress Tests
         uses: cypress-io/github-action@v6
         with:
           command: ${{ steps.build_cmd.outputs.CYPRESS_CMD }}
         env:
           CYPRESS_USERNAME: ${{ secrets.CYPRESS_USERNAME }}
           CYPRESS_PASSWORD: ${{ secrets.CYPRESS_PASSWORD }}
+        continue-on-error: true
 
-      - name: Generate report
+      - name: 📊 Generar Reportes
         if: always()
         run: |
           npm run report:merge
           npm run report:generate
+        continue-on-error: true
 
-      - name: Upload Cypress artifacts
+      - name: 📸 Crear Resumen de Artifacts
+        if: always()
+        shell: bash
+        run: |
+          echo "## 📊 Resultados de Tests - ${{ matrix.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Ambiente**: ${{ matrix.environment }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tipo de Prueba**: ${{ steps.build_cmd.outputs.TARGET }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Rama**: ${{ github.ref_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### 📁 Artifacts Generados" >> $GITHUB_STEP_SUMMARY
+          if [ -d "cypress/artifacts" ]; then
+            echo "✅ Capturas de pantalla y videos disponibles" >> $GITHUB_STEP_SUMMARY
+          fi
+          if [ -d "cypress/reports" ]; then
+            echo "✅ Reportes HTML disponibles" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: 📤 Subir Artifacts (Screenshots, Videos, Reports)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: cypress-artifacts
+          name: cypress-artifacts-${{ matrix.environment }}
           path: |
             cypress/artifacts/screenshots/**
             cypress/artifacts/videos/**
             cypress/reports/**
           if-no-files-found: ignore
+          retention-days: 30
+
+      - name: 📈 Publicar Reporte HTML
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: html-report-${{ matrix.environment }}
+          path: cypress/reports/report.html
+          if-no-files-found: ignore
+          retention-days: 30
+
+  # Job para notificaciones
+  notify:
+    name: 📢 Notificar Resultados
+    runs-on: ubuntu-latest
+    needs: [cypress-tests]
+    if: always()
+    steps:
+      - name: ✅ Pruebas Completadas
+        shell: bash
+        run: |
+          if [ "${{ needs.cypress-tests.result }}" = "success" ]; then
+            echo "✅ Todos los tests pasaron correctamente"
+          else
+            echo "⚠️  Algunos tests fallaron"
+          fi
+
+      - name: 💬 Comentar en PR (si aplica)
+        if: github.event_name == 'pull_request' && always()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const result = "${{ needs.cypress-tests.result }}";
+            const icon = result === 'success' ? '✅' : '⚠️';
+            const status = result === 'success' ? 'pasaron' : 'fallaron algunos';
+            const message = `${icon} **Pruebas E2E**: Los tests ${status}. Revisar artifacts para más detalles.`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });

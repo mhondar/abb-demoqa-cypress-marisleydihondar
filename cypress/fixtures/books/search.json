@@ -3,5 +3,8 @@
   "noResultsSearchTerm": "___no_results___",
   "caseInsensitiveTerm": "gIt",
   "whitespaceSearchTerm": "   ",
-  "narrowSearchTerm": "Speaking"
+  "narrowSearchTerm": "Speaking",
+  "authorSearchTerm": "Silverman",
+  "specialCharTerm": "O'Reilly",
+  "numericTerm": "978"
 }

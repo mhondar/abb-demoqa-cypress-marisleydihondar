@@ -9,6 +9,7 @@ module.exports = {
     tableBody: 'table tbody',
     bookRows: 'table tbody tr',
     bookTitleLinks: 'table tbody tr td a',
+    bookAuthorCells: 'table tbody tr td:nth-child(3)',
   },
 
   login: {

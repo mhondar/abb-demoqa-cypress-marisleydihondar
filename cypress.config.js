@@ -12,7 +12,13 @@ function loadEnvironmentConfig(environment) {
 
 module.exports = defineConfig({
   allowCypressEnv: false,
-
+  reporter: 'mochawesome',
+  reporterOptions: {
+    reportDir: 'cypress/reports',
+    overwrite: false,
+    html: false,
+    json: true,
+  },
   e2e: {
     setupNodeEvents(on, config) {
       const environment = config.env.environment || 'qa';

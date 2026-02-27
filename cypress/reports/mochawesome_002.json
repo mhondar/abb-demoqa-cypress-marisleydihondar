@@ -1,0 +1,140 @@
+{
+  "stats": {
+    "suites": 2,
+    "tests": 2,
+    "passes": 2,
+    "pending": 0,
+    "failures": 0,
+    "start": "2026-02-27T15:27:23.199Z",
+    "end": "2026-02-27T15:27:24.711Z",
+    "duration": 1512,
+    "testsRegistered": 2,
+    "passPercent": 100,
+    "pendingPercent": 0,
+    "other": 0,
+    "hasOther": false,
+    "skipped": 0,
+    "hasSkipped": false
+  },
+  "results": [
+    {
+      "uuid": "dc57c38a-4384-42b2-ae9b-a245742a0666",
+      "title": "",
+      "fullFile": "cypress/e2e/ui/books-search.cy.js",
+      "file": "cypress/e2e/ui/books-search.cy.js",
+      "beforeHooks": [],
+      "afterHooks": [],
+      "tests": [],
+      "suites": [
+        {
+          "uuid": "b06c037d-66f9-4b95-b8d8-3cff431b32ff",
+          "title": "Books - Search",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "filters results using centralized test data",
+              "fullTitle": "Books - Search filters results using centralized test data",
+              "timedOut": null,
+              "duration": 867,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "booksPage.visit();\nloadFixture('books/search.json').then(data => {\n  booksPage.search(data.validSearchTerm);\n  booksPage.expectAllTitlesContain(data.validSearchTerm);\n});",
+              "err": {},
+              "uuid": "e98af94b-e304-48a9-b356-85feef7e7c9f",
+              "parentUUID": "b06c037d-66f9-4b95-b8d8-3cff431b32ff",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": ["e98af94b-e304-48a9-b356-85feef7e7c9f"],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 867,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        },
+        {
+          "uuid": "0700122d-3fe6-4438-b081-e7fb433276fe",
+          "title": "Books - Search functionality",
+          "fullFile": "",
+          "file": "",
+          "beforeHooks": [],
+          "afterHooks": [],
+          "tests": [
+            {
+              "title": "should filter results based on search input",
+              "fullTitle": "Books - Search functionality should filter results based on search input",
+              "timedOut": null,
+              "duration": 592,
+              "state": "passed",
+              "speed": "fast",
+              "pass": true,
+              "fail": false,
+              "pending": false,
+              "context": null,
+              "code": "// 1️⃣ Guardar cantidad inicial de libros\nbooksPage.getRowsCount().then(initialCount => {\n  expect(initialCount).to.be.greaterThan(0);\n  // 2️⃣ Buscar término\n  booksPage.search('Git');\n  // 3️⃣ Validar que los resultados se filtran\n  booksPage.expectAllTitlesContain('Git');\n  // 4️⃣ Validar que la cantidad cambió\n  booksPage.getRowsCount().then(filteredCount => {\n    expect(filteredCount).to.be.lessThan(initialCount);\n  });\n  // 5️⃣ Limpiar búsqueda\n  booksPage.clearSearch();\n  // 6️⃣ Validar que vuelve el listado completo\n  booksPage.getRowsCount().should('equal', initialCount);\n});",
+              "err": {},
+              "uuid": "2891e72c-716a-43e9-a58e-d311e8795bd0",
+              "parentUUID": "0700122d-3fe6-4438-b081-e7fb433276fe",
+              "isHook": false,
+              "skipped": false
+            }
+          ],
+          "suites": [],
+          "passes": ["2891e72c-716a-43e9-a58e-d311e8795bd0"],
+          "failures": [],
+          "pending": [],
+          "skipped": [],
+          "duration": 592,
+          "root": false,
+          "rootEmpty": false,
+          "_timeout": 2000
+        }
+      ],
+      "passes": [],
+      "failures": [],
+      "pending": [],
+      "skipped": [],
+      "duration": 0,
+      "root": true,
+      "rootEmpty": true,
+      "_timeout": 2000
+    }
+  ],
+  "meta": {
+    "mocha": {
+      "version": "7.2.0"
+    },
+    "mochawesome": {
+      "options": {
+        "quiet": false,
+        "reportFilename": "mochawesome",
+        "saveHtml": false,
+        "saveJson": true,
+        "consoleReporter": "spec",
+        "useInlineDiffs": false,
+        "code": true
+      },
+      "version": "7.1.4"
+    },
+    "marge": {
+      "options": {
+        "reportDir": "cypress/reports",
+        "overwrite": false,
+        "html": false,
+        "json": true
+      },
+      "version": "6.3.2"
+    }
+  }
+}

@@ -761,8 +761,8 @@ describe('Feature Category', () => {
 **Marisleydi Hondar Martinez**  
 QA Automation Engineer | Test Automation Specialist
 
-- 📧 Email: [contact information]
-- 🔗 LinkedIn: [profile]
+- 📧 Email: mhondar@gmail.com
+- 🔗 LinkedIn: [profile](https://www.linkedin.com/in/marisleydi-hondar-martinez/)
 - 💼 Portfolio: [GitHub profile](https://github.com/mhondar)
 
 ---
